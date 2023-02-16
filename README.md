@@ -16,7 +16,7 @@ allprojects {
     
 dependencies {
 	...
-	implementation 'com.github.hoanganhtuan95ptit:Web3Ktx:1.0.0'
+	implementation 'com.github.hoanganhtuan95ptit:web3-ktx::1.0.1'
 }
 ```
 
