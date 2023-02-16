@@ -29,6 +29,7 @@ dependencies {
   * decimal
   * gasPrice
   * balance
+  * balanceMulti
   * balanceNative
   
     Exampel (https://github.com/hoanganhtuan95ptit/Web3Ktx/blob/main/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt)
