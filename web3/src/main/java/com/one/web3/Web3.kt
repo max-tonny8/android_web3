@@ -15,6 +15,9 @@ import com.one.web3.task.decimal.DecimalCallTask
 import com.one.web3.task.decimal.DecimalEvmCallTask
 import com.one.web3.task.decimal.DecimalParam
 import com.one.web3.task.decimal.DecimalSolCallTask
+import com.one.web3.task.decimalmulti.DecimalMultiEvmCallTask
+import com.one.web3.task.decimalmulti.DecimalMultiParam
+import com.one.web3.task.decimalmulti.DecimalMultiTask
 import com.one.web3.task.gasprice.GasPriceCallTask
 import com.one.web3.task.gasprice.GasPriceEvmCallTask
 import com.one.web3.task.gasprice.GasPriceParam
@@ -25,11 +28,13 @@ import retrofit2.Retrofit
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> = emptyList()) {
+open class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> = emptyList()) {
 
     val taskList: List<Web3Task<*, *>> by lazy {
 
         arrayListOf<Web3Task<*, *>>().apply {
+
+            add(DecimalMultiEvmCallTask(retrofit))
 
             add(BalanceMultiEvmCallTask(retrofit))
 
@@ -54,10 +59,17 @@ class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *
         return execute<DecimalParam, Int, DecimalCallTask>(DecimalParam(tokenAddress, chainId, rpcUrls))
     }
 
+    suspend fun decimalMulti(tokenAddressList: List<String>, multiCallAddress: String, chainId: Long, rpcUrls: List<String>): Map<String, Int> {
+
+        return execute<DecimalMultiParam, Map<String, Int>, DecimalMultiTask>(DecimalMultiParam(tokenAddressList, multiCallAddress, chainId, rpcUrls))
+    }
+
+
     suspend fun gasPrice(chainId: Long, rpcUrls: List<String>): BigInteger {
 
         return execute<GasPriceParam, BigInteger, GasPriceCallTask>(GasPriceParam(chainId, rpcUrls))
     }
+
 
     suspend fun balance(tokenAddress: String, walletAddress: String, chainId: Long, rpcUrls: List<String>): BigDecimal {
 
@@ -68,6 +80,7 @@ class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *
 
         return execute<BalanceMultiParam, Map<Pair<String, String>, BigDecimal>, BalanceMultiTask>(BalanceMultiParam(tokenAddressList, walletAddressList, multiCallAddress, chainId, rpcUrls))
     }
+
 
     suspend fun balanceNative(walletAddress: String, chainId: Long, rpcUrls: List<String>): BigInteger {
 

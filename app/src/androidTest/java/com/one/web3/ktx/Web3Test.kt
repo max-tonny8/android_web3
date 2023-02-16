@@ -23,10 +23,31 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class Web3Test {
 
+    private var web3: Web3? = null
+
+    private var retrofit: Retrofit? = null
+
     private var chainList: List<Chain>? = null
 
-    @Test
-    fun testBalanceNative() = runBlocking {
+    private fun getWeb3(retrofit: Retrofit): Web3 {
+
+        if (web3 != null) {
+
+            return web3!!
+        }
+
+        return Web3(retrofit).apply {
+
+            web3 = this
+        }
+    }
+
+    private fun getRetrofit(): Retrofit {
+
+        if (retrofit != null) {
+
+            return retrofit!!
+        }
 
         val okHttpClient = OkHttpClient
             .Builder()
@@ -38,17 +59,66 @@ class Web3Test {
             .build()
 
 
-        val retrofit = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl("https://github.com/hoanganhtuan95ptit/Web3Ktx/")
             .addConverterFactory(JacksonConverterFactory.create())
             .client(okHttpClient)
-            .build()
+            .build().apply {
 
+                retrofit = this
+            }
+    }
 
-        val list = chainList ?: retrofit.create(ChainService::class.java).call("https://raw.githubusercontent.com/hoanganhtuan95ptit/config/main/chain/chains.json").apply {
+    private suspend fun getChainList(retrofit: Retrofit): List<Chain> {
+
+        if (chainList != null) {
+
+            return chainList!!
+        }
+
+        return retrofit.create(ChainService::class.java).call("https://raw.githubusercontent.com/hoanganhtuan95ptit/config/main/chain/chains.json").apply {
 
             chainList = this
         }
+    }
+
+    @Test
+    fun testDecimalMulti() = runBlocking {
+
+        val retrofit = getRetrofit()
+
+        val list = getChainList(retrofit)
+
+
+        val tokens = listOf("0x0000000000085d4780b73119b644ae5ecd22b376", "0x028171bca77440897b824ca71d1c56cac55b68a3")
+
+        list.first().let { chain ->
+
+            val rpcUrls = chain.urls.filter { it.type == "PRC" }.sortedByDescending { it.priority }.map { it.url }
+
+            if (rpcUrls.isEmpty()) return@let
+
+            val balance = getWeb3(retrofit).runCatching {
+
+                decimalMulti(tokens, "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696", chain.id, rpcUrls)
+            }.getOrElse {
+
+                Log.d("tuanha", "testDecimalMulti: ", it)
+                null
+            }
+
+            Log.d("tuanha", "testDecimalMulti: chainName:${chain.name} chainId:${chain.id} - balance:${balance.toJson()}")
+        }
+
+        Unit
+    }
+
+    @Test
+    fun testBalanceNative() = runBlocking {
+
+        val retrofit = getRetrofit()
+
+        val list = getChainList(retrofit)
 
 
         list.map { chain ->
@@ -57,7 +127,14 @@ class Web3Test {
 
             if (rpcUrls.isEmpty()) return@map
 
-            val balance = Web3(retrofit).runCatching { balanceNative("0x8d61ab7571b117644a52240456df66ef846cd999", chain.id, rpcUrls) }.getOrNull()
+            val balance = getWeb3(retrofit).runCatching {
+
+                balanceNative("0x8d61ab7571b117644a52240456df66ef846cd999", chain.id, rpcUrls)
+            }.getOrElse {
+
+                Log.d("tuanha", "testBalanceNative: ", it)
+                null
+            }
 
             Log.d("tuanha", "testBalanceNative: chainName:${chain.name} chainId:${chain.id} - balance:$balance")
         }
@@ -68,27 +145,9 @@ class Web3Test {
     @Test
     fun testBalanceMulti() = runBlocking {
 
-        val okHttpClient = OkHttpClient
-            .Builder()
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .addInterceptor(HttpLoggingInterceptor().setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE))
-            .hostnameVerifier { _, _ -> true }
-            .build()
+        val retrofit = getRetrofit()
 
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://github.com/hoanganhtuan95ptit/Web3Ktx/")
-            .addConverterFactory(JacksonConverterFactory.create())
-            .client(okHttpClient)
-            .build()
-
-
-        val list = chainList ?: retrofit.create(ChainService::class.java).call("https://raw.githubusercontent.com/hoanganhtuan95ptit/config/main/chain/chains.json").apply {
-
-            chainList = this
-        }
+        val list = getChainList(retrofit)
 
 
         val tokens = listOf("0x0000000000085d4780b73119b644ae5ecd22b376", "0x028171bca77440897b824ca71d1c56cac55b68a3")
@@ -101,7 +160,7 @@ class Web3Test {
 
             if (rpcUrls.isEmpty()) return@let
 
-            val balance = Web3(retrofit).runCatching {
+            val balance = getWeb3(retrofit).runCatching {
 
                 balanceMulti(tokens, wallets, "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696", chain.id, rpcUrls)
             }.getOrElse {
