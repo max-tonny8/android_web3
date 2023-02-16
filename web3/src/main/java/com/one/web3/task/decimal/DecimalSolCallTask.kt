@@ -1,9 +1,10 @@
 package com.one.web3.task.decimal
 
 import com.one.web3.task.EvmCall
+import com.one.web3.task.SolCall
 import retrofit2.Retrofit
 
-class DecimalSolCallTask(private val retrofit: Retrofit) : DecimalCallTask, EvmCall {
+class DecimalSolCallTask(private val retrofit: Retrofit) : DecimalCallTask, SolCall {
 
     override fun providerRetrofit(): Retrofit = retrofit
 

@@ -4,6 +4,9 @@ import com.one.web3.task.balance.BalanceEvmCallTask
 import com.one.web3.task.balance.BalanceParam
 import com.one.web3.task.balance.BalanceSolCallTask
 import com.one.web3.task.balance.BalanceTask
+import com.one.web3.task.balancemulti.BalanceMultiEvmCallTask
+import com.one.web3.task.balancemulti.BalanceMultiParam
+import com.one.web3.task.balancemulti.BalanceMultiTask
 import com.one.web3.task.balancenative.BalanceNativeEvmCallTask
 import com.one.web3.task.balancenative.BalanceNativeParam
 import com.one.web3.task.balancenative.BalanceNativeSolCallTask
@@ -24,9 +27,11 @@ import java.math.BigInteger
 
 class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> = emptyList()) {
 
-    private val taskList: List<Web3Task<*, *>> by lazy {
+    val taskList: List<Web3Task<*, *>> by lazy {
 
         arrayListOf<Web3Task<*, *>>().apply {
+
+            add(BalanceMultiEvmCallTask(retrofit))
 
             add(BalanceEvmCallTask(retrofit))
             add(BalanceSolCallTask(retrofit))
@@ -95,6 +100,24 @@ class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *
         } else {
 
             error("not found balance")
+        }
+    }
+
+    suspend fun balanceMulti(tokenAddressList: List<String>, walletAddressList: List<String>, multiCallAddress: String, chainId: Long, rpcUrls: List<String>): Map<Pair<String, String>, BigDecimal> {
+
+        val state = taskList.filterIsInstance<BalanceMultiTask>().executeAsyncByFast(BalanceMultiParam(tokenAddressList, walletAddressList, multiCallAddress, chainId, rpcUrls))
+
+        if (state is ResultState.Failed) {
+
+            throw  state.cause
+        }
+
+        if (state is ResultState.Success) {
+
+            return state.data
+        } else {
+
+            error("not found balanceNative")
         }
     }
 
