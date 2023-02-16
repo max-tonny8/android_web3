@@ -51,79 +51,32 @@ class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *
 
     suspend fun decimal(tokenAddress: String, chainId: Long, rpcUrls: List<String>): Int {
 
-        val state = taskList.filterIsInstance<DecimalCallTask>().executeAsyncByFast(DecimalParam(tokenAddress, chainId, rpcUrls))
-
-        if (state is ResultState.Failed) {
-
-            throw  state.cause
-        }
-
-        if (state is ResultState.Success) {
-
-            return state.data
-        } else {
-
-            error("not found decimal")
-        }
+        return execute<DecimalParam, Int, DecimalCallTask>(DecimalParam(tokenAddress, chainId, rpcUrls))
     }
 
     suspend fun gasPrice(chainId: Long, rpcUrls: List<String>): BigInteger {
 
-        val state = taskList.filterIsInstance<GasPriceCallTask>().executeAsyncByFast(GasPriceParam(chainId, rpcUrls))
-
-        if (state is ResultState.Failed) {
-
-            throw  state.cause
-        }
-
-        if (state is ResultState.Success) {
-
-            return state.data
-        } else {
-
-            error("not found gasPrice")
-        }
+        return execute<GasPriceParam, BigInteger, GasPriceCallTask>(GasPriceParam(chainId, rpcUrls))
     }
 
     suspend fun balance(tokenAddress: String, walletAddress: String, chainId: Long, rpcUrls: List<String>): BigDecimal {
 
-        val state = taskList.filterIsInstance<BalanceTask>().executeAsyncByFast(BalanceParam(tokenAddress, walletAddress, chainId, rpcUrls))
-
-        if (state is ResultState.Failed) {
-
-            throw  state.cause
-        }
-
-        if (state is ResultState.Success) {
-
-            return state.data
-        } else {
-
-            error("not found balance")
-        }
+        return execute<BalanceParam, BigDecimal, BalanceTask>(BalanceParam(tokenAddress, walletAddress, chainId, rpcUrls))
     }
 
     suspend fun balanceMulti(tokenAddressList: List<String>, walletAddressList: List<String>, multiCallAddress: String, chainId: Long, rpcUrls: List<String>): Map<Pair<String, String>, BigDecimal> {
 
-        val state = taskList.filterIsInstance<BalanceMultiTask>().executeAsyncByFast(BalanceMultiParam(tokenAddressList, walletAddressList, multiCallAddress, chainId, rpcUrls))
-
-        if (state is ResultState.Failed) {
-
-            throw  state.cause
-        }
-
-        if (state is ResultState.Success) {
-
-            return state.data
-        } else {
-
-            error("not found balanceNative")
-        }
+        return execute<BalanceMultiParam, Map<Pair<String, String>, BigDecimal>, BalanceMultiTask>(BalanceMultiParam(tokenAddressList, walletAddressList, multiCallAddress, chainId, rpcUrls))
     }
 
     suspend fun balanceNative(walletAddress: String, chainId: Long, rpcUrls: List<String>): BigInteger {
 
-        val state = taskList.filterIsInstance<BalanceNativeTask>().executeAsyncByFast(BalanceNativeParam(walletAddress, chainId, rpcUrls))
+        return execute<BalanceNativeParam, BigInteger, BalanceNativeTask>(BalanceNativeParam(walletAddress, chainId, rpcUrls))
+    }
+
+    suspend inline fun <Param : com.one.web3.Param, Result, reified T : Web3Task<Param, Result>> execute(param: Param): Result {
+
+        val state = taskList.filterIsInstance<T>().executeAsyncByFast(param)
 
         if (state is ResultState.Failed) {
 
@@ -135,7 +88,7 @@ class Web3(private val retrofit: Retrofit, private val tasks: List<Web3Task<*, *
             return state.data
         } else {
 
-            error("not found balanceNative")
+            error("not found")
         }
     }
 }
