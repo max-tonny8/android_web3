@@ -26,13 +26,11 @@ dependencies {
 
 # Function support:
    
-  * decimal
+  * decimal - [example](https://github.com/hoanganhtuan95ptit/web3-ktx/blob/f1da7a9f43515e22c0d5e63bd31675cb05dd651d/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt#L86)
   * gasPrice
-  * balance
-  * balanceMulti
-  * balanceNative
-  
-    Exampel (https://github.com/hoanganhtuan95ptit/Web3Ktx/blob/main/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt)
+  * balance - [example](https://github.com/hoanganhtuan95ptit/web3-ktx/blob/f1da7a9f43515e22c0d5e63bd31675cb05dd651d/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt#L146)
+  * balanceMulti - [example](https://github.com/hoanganhtuan95ptit/web3-ktx/blob/f1da7a9f43515e22c0d5e63bd31675cb05dd651d/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt#L146)
+  * balanceNative - [example](https://github.com/hoanganhtuan95ptit/web3-ktx/blob/f1da7a9f43515e22c0d5e63bd31675cb05dd651d/app/src/androidTest/java/com/one/web3/ktx/Web3Test.kt#L117)
   
     Functions will be added over time, if you need to add any more please create us "issues"
   
