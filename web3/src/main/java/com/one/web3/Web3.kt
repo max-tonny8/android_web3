@@ -18,8 +18,12 @@ import com.one.web3.task.balancenative.BalanceNativeSolCallTask
 import com.one.web3.task.balancenative.BalanceNativeTask
 import com.one.web3.task.bonus.BonusFeeTask
 import com.one.web3.task.bonus.approve.BonusFeeApproveParam
+import com.one.web3.task.bonus.approve.L1FeeApproveEvmCallTask
 import com.one.web3.task.bonus.sign.BonusFeeSignParam
+import com.one.web3.task.bonus.sign.L1FeeSignEvmCallTask
 import com.one.web3.task.bonus.transfer.BonusFeeTransferParam
+import com.one.web3.task.bonus.transfer.CreateTokenAccountFeeTransferSolCallTask
+import com.one.web3.task.bonus.transfer.L1FeeTransferEvmCallTask
 import com.one.web3.task.decimal.DecimalCallTask
 import com.one.web3.task.decimal.DecimalEvmCallTask
 import com.one.web3.task.decimal.DecimalParam
@@ -28,27 +32,42 @@ import com.one.web3.task.decimalmulti.DecimalMultiEvmCallTask
 import com.one.web3.task.decimalmulti.DecimalMultiParam
 import com.one.web3.task.decimalmulti.DecimalMultiTask
 import com.one.web3.task.gaslimit.GasLimitTask
+import com.one.web3.task.gaslimit.approve.GasLimitApproveEvmCallTask
 import com.one.web3.task.gaslimit.approve.GasLimitApproveParam
+import com.one.web3.task.gaslimit.approve.GasLimitApproveSolCallTask
+import com.one.web3.task.gaslimit.sign.GasLimitSignEvmCallTask
 import com.one.web3.task.gaslimit.sign.GasLimitSignParam
+import com.one.web3.task.gaslimit.sign.GasLimitSignSolCallTask
+import com.one.web3.task.gaslimit.transfer.GasLimitTransferEvmCallTask
 import com.one.web3.task.gaslimit.transfer.GasLimitTransferParam
+import com.one.web3.task.gaslimit.transfer.GasLimitTransferSolCallTask
 import com.one.web3.task.gasprice.GasPriceCallTask
 import com.one.web3.task.gasprice.GasPriceEvmCallTask
 import com.one.web3.task.gasprice.GasPriceParam
 import com.one.web3.task.gasprice.GasPriceSolCallTask
+import com.one.web3.task.minednonce.MinedNonceEvmCallTask
 import com.one.web3.task.minednonce.MinedNonceParam
+import com.one.web3.task.minednonce.MinedNonceSolCallTask
 import com.one.web3.task.minednonce.MinedNonceTask
 import com.one.web3.task.pendingnonce.PendingNonceParam
 import com.one.web3.task.pendingnonce.PendingNonceTask
+import com.one.web3.task.priorityfee.PriorityFeeEvmCallTask
 import com.one.web3.task.priorityfee.PriorityFeeParam
+import com.one.web3.task.priorityfee.PriorityFeeSolCallTask
 import com.one.web3.task.priorityfee.PriorityFeeTask
 import com.one.web3.task.privatekey.PrivateKeyParam
 import com.one.web3.task.privatekey.PrivateKeyTask
+import com.one.web3.task.status.TransactionStatusEvmCallTask
 import com.one.web3.task.status.TransactionStatusParam
+import com.one.web3.task.status.TransactionStatusSolCallTask
 import com.one.web3.task.status.TransactionStatusTask
+import com.one.web3.task.transaction.approve.TokenApproveEvmCallTask
 import com.one.web3.task.transaction.approve.TokenApproveParam
 import com.one.web3.task.transaction.approve.TokenApproveTask
+import com.one.web3.task.transaction.sign.SignTransactionEvmCallTask
 import com.one.web3.task.transaction.sign.SignTransactionParam
 import com.one.web3.task.transaction.sign.SignTransactionTask
+import com.one.web3.task.transaction.transfer.TransferEvmTask
 import com.one.web3.task.transaction.transfer.TransferParam
 import com.one.web3.task.transaction.transfer.TransferTask
 import retrofit2.Retrofit
@@ -63,21 +82,52 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
 
             add(TokenAllowanceEvmCallTask())
 
-            add(DecimalMultiEvmCallTask())
-
-            add(BalanceMultiEvmCallTask())
-
             add(BalanceEvmCallTask())
             add(BalanceSolCallTask())
+
+            add(BalanceMultiEvmCallTask())
 
             add(BalanceNativeEvmCallTask())
             add(BalanceNativeSolCallTask())
 
+            add(L1FeeApproveEvmCallTask())
+
+            add(L1FeeSignEvmCallTask())
+
+            add(L1FeeTransferEvmCallTask())
+            add(CreateTokenAccountFeeTransferSolCallTask())
+
+            add(DecimalMultiEvmCallTask())
+
             add(DecimalEvmCallTask())
             add(DecimalSolCallTask())
 
+            add(GasLimitApproveEvmCallTask())
+            add(GasLimitApproveSolCallTask())
+
+            add(GasLimitSignEvmCallTask())
+            add(GasLimitSignSolCallTask())
+
+            add(GasLimitTransferEvmCallTask())
+            add(GasLimitTransferSolCallTask())
+
             add(GasPriceEvmCallTask())
             add(GasPriceSolCallTask())
+
+            add(MinedNonceEvmCallTask())
+            add(MinedNonceSolCallTask())
+
+            add(PriorityFeeEvmCallTask())
+            add(PriorityFeeSolCallTask())
+
+            add(TransactionStatusEvmCallTask())
+            add(TransactionStatusSolCallTask())
+
+            add(TokenApproveEvmCallTask())
+
+            add(SignTransactionEvmCallTask())
+
+            add(TransferEvmTask())
 
             addAll(tasks)
         }
@@ -185,7 +235,7 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
         return execute<PrivateKeyParam, String, PrivateKeyTask>(PrivateKeyParam(walletAddress))
     }
 
-    suspend fun status(txHash: String, chainId: Long, rpcUrls: List<String>, sync: Boolean = false): BigInteger {
+    suspend fun transactionStatus(txHash: String, chainId: Long, rpcUrls: List<String>, sync: Boolean = false): BigInteger {
 
         return execute<TransactionStatusParam, BigInteger, TransactionStatusTask>(TransactionStatusParam(txHash, chainId, rpcUrls, sync))
     }
@@ -196,7 +246,7 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
         to: String, from: String,
         data: String, value: BigInteger,
         nonce: BigInteger?, gasLimit: BigInteger, gasPrice: BigDecimal, priorityFee: BigDecimal,
-        chainId: Long, rpcUrls: List<String>, sync: Boolean = false
+        chainId: Long, rpcUrls: List<String>
     ): Pair<String, BigInteger> {
 
         return execute<TokenApproveParam, Pair<String, BigInteger>, TokenApproveTask>(
@@ -206,7 +256,7 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
                 to, from,
                 data, value,
                 nonce, gasLimit, gasPrice, priorityFee,
-                chainId, rpcUrls, sync
+                chainId, rpcUrls, sync = true
             )
         )
     }
@@ -216,7 +266,7 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
         data: String, value: BigInteger,
         nonce: BigInteger?, gasLimit: BigInteger, gasPrice: BigDecimal, priorityFee: BigDecimal,
         isFromDApp: Boolean,
-        chainId: Long, rpcUrls: List<String>, sync: Boolean = false
+        chainId: Long, rpcUrls: List<String>
     ): Pair<String, BigInteger> {
 
         return execute<SignTransactionParam, Pair<String, BigInteger>, SignTransactionTask>(
@@ -225,7 +275,7 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
                 data, value,
                 nonce, gasLimit, gasPrice, priorityFee,
                 isFromDApp,
-                chainId, rpcUrls, sync
+                chainId, rpcUrls, sync = true
             )
         )
     }
@@ -235,14 +285,14 @@ open class Web3(val retrofit: Retrofit, private val tasks: List<Web3Task<*, *>> 
         tokenId: BigInteger? = null, tokenLogo: String, tokenAmount: BigInteger, tokenSymbol: String, tokenDecimal: Int, tokenAddress: String,
         isTokenNative: Boolean,
         nonce: BigInteger?, gasLimit: BigInteger, gasPrice: BigDecimal, priorityFee: BigDecimal,
-        chainId: Long, rpcUrls: List<String>, sync: Boolean = false
+        chainId: Long, rpcUrls: List<String>
     ): Pair<String, BigInteger> {
 
         return execute<TransferParam, Pair<String, BigInteger>, TransferTask>(
             TransferParam(
                 walletAddress, receiverAddress, tokenId, tokenLogo, tokenAmount, tokenSymbol, tokenDecimal, tokenAddress, isTokenNative,
                 nonce, gasLimit, gasPrice, priorityFee,
-                chainId, rpcUrls, sync
+                chainId, rpcUrls, sync = true
             )
         )
     }
