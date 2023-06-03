@@ -13,13 +13,11 @@ fun functionBalanceEvmOf(walletAddress: String) = Function(
     "balanceOf", listOf(Address(walletAddress)), listOf<TypeReference<*>>(object : TypeReference<Uint256>() {})
 )
 
-class BalanceEvmCallTask(private val retrofit: Retrofit) : BalanceTask, EvmCall {
-
-    override fun providerRetrofit(): Retrofit = retrofit
+class BalanceEvmCallTask() : BalanceTask, EvmCall {
 
     override suspend fun executeTask(param: BalanceParam): BigDecimal {
 
-        return read(METHOD_NAME_ETH_CALL, functionBalanceEvmOf(param.walletAddress), null, param.tokenAddress, param.rpcUrls).firstOrNull().let { type ->
+        return call(METHOD_NAME_ETH_CALL, functionBalanceEvmOf(param.walletAddress), null, param.tokenAddress, param.rpcUrls, param.sync).firstOrNull().let { type ->
 
             (type as? Uint256)?.value?.let { BigDecimal(it) } ?: BigDecimal.ZERO
         }

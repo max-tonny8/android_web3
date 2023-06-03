@@ -6,13 +6,13 @@ import org.web3j.utils.Numeric
 import retrofit2.Retrofit
 import java.math.BigInteger
 
-class BalanceNativeEvmCallTask(private val retrofit: Retrofit) : BalanceNativeTask, EvmCall {
+class BalanceNativeEvmCallTask() : BalanceNativeTask, EvmCall {
 
-    override fun providerRetrofit(): Retrofit = retrofit
+
 
     override suspend fun executeTask(param: BalanceNativeParam): BigInteger {
 
-        return read("eth_getBalance", param.walletAddress, DefaultBlockParameterName.LATEST, param.rpcUrls).textValue()?.let {
+        return call("eth_getBalance", param.walletAddress, DefaultBlockParameterName.LATEST, param.rpcUrls, param.sync).textValue()?.let {
 
             Numeric.decodeQuantity(it)
         }.let {

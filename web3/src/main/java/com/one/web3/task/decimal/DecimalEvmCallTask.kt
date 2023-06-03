@@ -11,13 +11,13 @@ fun functionDecimalEvmOf() = Function(
     "decimals", emptyList(), listOf<TypeReference<*>>(object : TypeReference<Uint8>() {})
 )
 
-class DecimalEvmCallTask(private val retrofit: Retrofit) : DecimalCallTask, EvmCall {
+class DecimalEvmCallTask() : DecimalCallTask, EvmCall {
 
-    override fun providerRetrofit(): Retrofit = retrofit
+
 
     override suspend fun executeTask(param: DecimalParam): Int {
 
-        return read(METHOD_NAME_ETH_CALL, functionDecimalEvmOf(), null, param.tokenAddress, param.rpcUrls).firstOrNull().let { type ->
+        return call(METHOD_NAME_ETH_CALL, functionDecimalEvmOf(), null, param.tokenAddress, param.rpcUrls, param.sync).firstOrNull().let { type ->
 
             (type as? Uint8)?.value?.toInt() ?: 0
         }

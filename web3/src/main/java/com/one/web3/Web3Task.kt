@@ -1,7 +1,7 @@
 package com.one.web3
 
-import com.one.web3.utils.ResultState
-import com.one.web3.utils.Task
+import com.one.coreapp.data.usecase.ResultState
+import com.one.task.Task
 
 interface Web3Task<Param : com.one.web3.Param, Result> : Task<Param, Result> {
 
@@ -17,7 +17,7 @@ interface Web3Task<Param : com.one.web3.Param, Result> : Task<Param, Result> {
             ResultState.Success(executeTask(param))
         }.getOrElse {
 
-            ResultState.Failed("", it)
+            ResultState.Failed(it)
         }
     }
 }

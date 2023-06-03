@@ -1,22 +1,25 @@
 package com.one.web3.task
 
 import org.web3j.abi.TypeReference
-import org.web3j.abi.datatypes.*
+import org.web3j.abi.datatypes.Bool
+import org.web3j.abi.datatypes.DynamicArray
+import org.web3j.abi.datatypes.DynamicBytes
+import org.web3j.abi.datatypes.DynamicStruct
 import org.web3j.abi.datatypes.Function
 
 
 interface EvmMultiCallV2 : EvmCall {
 
-    suspend fun readMultiCall(multiCallAddress: String, staticStruct: List<DynamicStruct>, rpcUrls: List<String>): List<Result> {
+    suspend fun call(multiCallAddress: String, staticStruct: List<DynamicStruct>, method: String, rpcUrls: List<String>, sync: Boolean): List<Result> {
 
         val aggregateFunction = Function(
-            "tryAggregate",
+            method,
             listOf(Bool(false), DynamicArray(DynamicStruct::class.java, staticStruct)),
             listOf(object : TypeReference<DynamicArray<Result>>() {})
         )
 
 
-        val response = read(METHOD_NAME_ETH_CALL, aggregateFunction, null, multiCallAddress, rpcUrls)
+        val response = call(METHOD_NAME_ETH_CALL, aggregateFunction, null, multiCallAddress, rpcUrls, sync)
 
 
         val dynamicArray = response.getOrNull(0) as? DynamicArray<*> ?: throw RuntimeException("Can't call multi")

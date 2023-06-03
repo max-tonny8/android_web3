@@ -1,7 +1,11 @@
 package com.one.web3
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.one.web3.utils.*
+import com.one.coreapp.data.usecase.ResultState
+import com.one.coreapp.data.usecase.toSuccess
+import com.one.task.Task
+import com.one.task.executeAsyncByFast
+import com.one.task.executeSyncByPriority
 import org.web3j.protocol.core.Response
 import retrofit2.Retrofit
 import retrofit2.http.Body
@@ -14,7 +18,10 @@ var service: Web3Service? = null
 
 interface Web3Call {
 
-    fun providerRetrofit(): Retrofit
+    fun providerRetrofit(): Retrofit {
+
+        return Web3.instance().retrofit
+    }
 
     fun checkSupportChain(chainId: Long)
 
@@ -24,60 +31,37 @@ interface Web3Call {
         service = this
     }
 
+    suspend fun call(method: String, rpcUrls: List<String>, sync: Boolean): JsonNode {
 
-    suspend fun write(method: String, rpcUrls: List<String>): JsonNode {
-
-        return write(Web3Request(method, emptyList()), rpcUrls)
+        return call(Web3Request(method, emptyList()), rpcUrls, sync)
     }
 
-    suspend fun write(method: String, params: List<Any>?, rpcUrls: List<String>): JsonNode {
+    suspend fun call(method: String, params: List<Any>?, rpcUrls: List<String>, sync: Boolean): JsonNode {
 
-        return write(Web3Request(method, params), rpcUrls)
+        return call(Web3Request(method, params), rpcUrls, sync)
     }
 
-    suspend fun write(body: Web3Request, rpcUrls: List<String>): JsonNode {
+    suspend fun call(body: Web3Request, rpcUrls: List<String>, sync: Boolean): JsonNode {
 
-        val state = rpcUrls.map { rpcUrl ->
+
+        val tasks = rpcUrls.map { rpcUrl ->
 
             NodeCallTask(rpcUrl, providerService())
-        }.run {
-
-            executeSyncByPriority(NodeCallTask.Param(body))
         }
 
-        if (state is ResultState.Failed) {
 
-            throw state.cause
-        }
+        val state = if (sync) {
 
-        return state.toSuccess()?.data?.result ?: error("result not found")
-    }
+            tasks.executeSyncByPriority(NodeCallTask.Param(body))
+        } else {
 
-
-    suspend fun read(method: String, rpcUrls: List<String>): JsonNode {
-
-        return read(Web3Request(method, emptyList()), rpcUrls)
-    }
-
-    suspend fun read(method: String, params: List<Any>?, rpcUrls: List<String>): JsonNode {
-
-        return read(Web3Request(method, params), rpcUrls)
-    }
-
-    suspend fun read(body: Web3Request, rpcUrls: List<String>): JsonNode {
-
-        val state = rpcUrls.map { rpcUrl ->
-
-            NodeCallTask(rpcUrl, providerService())
-        }.run {
-
-            executeAsyncByFast(NodeCallTask.Param(body))
+            tasks.executeAsyncByFast(NodeCallTask.Param(body))
         }
 
 
         if (state is ResultState.Failed) {
 
-            throw state.cause
+            throw state.error
         }
 
         return state.toSuccess()?.data?.result ?: error("result not found")
@@ -102,7 +86,7 @@ private class NodeCallTask(private val url: String, val ethCallService: Web3Serv
 }
 
 
-open class Param(open val chainId: Long, open val rpcUrls: List<String>)
+open class Param(open val chainId: Long, open val rpcUrls: List<String>, open val sync: Boolean)
 
 
 interface Web3Service {

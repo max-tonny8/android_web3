@@ -8,15 +8,11 @@ import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.DynamicStruct
 import org.web3j.utils.Numeric
-import retrofit2.Retrofit
 import java.math.BigDecimal
 
-class BalanceMultiEvmCallTask(private val retrofit: Retrofit) : BalanceMultiTask, EvmMultiCallV2 {
-
-    override fun providerRetrofit(): Retrofit = retrofit
+class BalanceMultiEvmCallTask : BalanceMultiTask, EvmMultiCallV2 {
 
     override suspend fun executeTask(param: BalanceMultiParam): Map<Pair<String, String>, BigDecimal> {
-
 
         val staticStruct = hashMapOf<Pair<String, String>, DynamicStruct>()
 
@@ -37,7 +33,7 @@ class BalanceMultiEvmCallTask(private val retrofit: Retrofit) : BalanceMultiTask
 
         val results = hashMapOf<Pair<String, String>, BigDecimal>()
 
-        readMultiCall(param.multiCallAddress, staticStruct.values.toList(), param.rpcUrls).forEachIndexed { index, result ->
+        call(param.multiCallAddress, staticStruct.values.toList(), "tryAggregate", param.rpcUrls, param.sync).forEachIndexed { index, result ->
 
             if (result.success.value != true) return@forEachIndexed
 

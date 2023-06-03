@@ -1,9 +1,12 @@
 package com.one.web3.ktx.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 
 data class Chain(
 
     var id: Long = 0,
+    var type: String = "",
     var name: String = "",
 
     var logo: String = "",
@@ -26,7 +29,11 @@ data class Url(
     var type: String = "",
     var name: String = "",
     var priority: String? = null
-)
+) {
+
+    @JsonIgnore
+    var time: Long = -1
+}
 
 data class Config(
     var name: String = "",

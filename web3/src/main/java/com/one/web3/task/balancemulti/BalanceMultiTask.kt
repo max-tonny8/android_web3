@@ -6,4 +6,4 @@ import java.math.BigDecimal
 
 interface BalanceMultiTask : Web3Task<BalanceMultiParam, Map<Pair<String, String>, BigDecimal>>
 
-data class BalanceMultiParam(val tokenAddressList: List<String>, val walletAddressList: List<String>, val multiCallAddress: String, override val chainId: Long, override val rpcUrls: List<String>) : Param(chainId, rpcUrls)
+data class BalanceMultiParam(val tokenAddressList: List<String>, val walletAddressList: List<String>, val multiCallAddress: String, override val chainId: Long, override val rpcUrls: List<String>, override val sync: Boolean) : Param(chainId, rpcUrls, sync)

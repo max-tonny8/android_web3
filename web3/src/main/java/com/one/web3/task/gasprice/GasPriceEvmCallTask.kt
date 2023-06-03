@@ -5,13 +5,11 @@ import org.web3j.utils.Numeric
 import retrofit2.Retrofit
 import java.math.BigInteger
 
-class GasPriceEvmCallTask(private val retrofit: Retrofit) : GasPriceCallTask, EvmCall {
-
-    override fun providerRetrofit(): Retrofit = retrofit
+class GasPriceEvmCallTask() : GasPriceCallTask, EvmCall {
 
     override suspend fun executeTask(param: GasPriceParam): BigInteger {
 
-        return read("eth_gasPrice", emptyList(), param.rpcUrls).textValue()?.let {
+        return call("eth_gasPrice", emptyList(), param.rpcUrls, param.sync).textValue()?.let {
 
             Numeric.decodeQuantity(it)
         }.let {
