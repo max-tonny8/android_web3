@@ -1,25 +1,6 @@
 # Web3Ktx
 This is a library for Android to call data from Node on Ethereum Chain or Solana Chain
 
-
-# Import
-
-```java
-
-allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
-}
-    
-    
-dependencies {
-	...
-	implementation 'com.github.hoanganhtuan95ptit:web3-ktx:$last-release'
-}
-```
-
 # Chain Support:
   * All EVM chain (https://chainlist.org/)
   * SOL chain
@@ -53,8 +34,24 @@ Functions will be added over time, if you need to add any more please create us 
   
 # Architecture
 
+# Import
 
-  
+```java
+
+allprojects {
+   repositories {
+	...
+	maven { url 'https://jitpack.io' }
+   }
+}
+    
+    
+dependencies {
+   ...
+   implementation 'com.github.hoanganhtuan95ptit:web3-ktx:$last-release'
+}
+```
+
 # Libary:
 
   * Web3j
