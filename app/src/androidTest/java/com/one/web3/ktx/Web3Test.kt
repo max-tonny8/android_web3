@@ -31,7 +31,7 @@ class Web3Test {
 
             val rpcUrls = chain.urls.filter { it.type == "RPC" }.sortedByDescending { it.priority }.map { it.url }
 
-            val balance = web3.runCatching {
+            val decimals = web3.runCatching {
 
                 decimalMulti(tokens, "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696", chain.id, rpcUrls)
             }.getOrElse {
@@ -40,7 +40,7 @@ class Web3Test {
                 null
             }
 
-            Log.d("tuanha", "testDecimalMulti: chainName:${chain.name} chainId:${chain.id} - balance:${balance.toJson()}")
+            Log.d("tuanha", "testDecimalMulti: chainName:${chain.name} chainId:${chain.id} - decimal:${decimals.toJson()}")
         }
 
         Unit
