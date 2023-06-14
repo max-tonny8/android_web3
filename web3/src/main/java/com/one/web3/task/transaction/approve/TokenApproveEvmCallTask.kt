@@ -17,8 +17,8 @@ class TokenApproveEvmCallTask : TokenApproveTask, TransactionEvmCall {
             Pair("", -BigInteger.ONE)
         } else doTransaction(
 
-            to = param.to,
-            from = param.from,
+            to = param.tokenAddress,
+            from = param.walletAddress,
 
             data = FunctionEncoder.encode(functionApproveEvmOf(param.smartContractAddress, BigInteger.ZERO)),
 
@@ -36,8 +36,8 @@ class TokenApproveEvmCallTask : TokenApproveTask, TransactionEvmCall {
 
         pair = doTransaction(
 
-            to = param.to,
-            from = param.from,
+            to = param.tokenAddress,
+            from = param.walletAddress,
 
             data = FunctionEncoder.encode(functionApproveEvmOf(param.smartContractAddress, param.tokenAmount)),
 

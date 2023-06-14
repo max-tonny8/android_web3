@@ -31,6 +31,8 @@ interface TransactionEvmCall : EvmCall {
 
         chainId: Long,
         rpcUrls: List<String>,
+
+        broadcastTransaction: Boolean = true
     ): Pair<String, BigInteger> {
 
 
@@ -68,10 +70,11 @@ interface TransactionEvmCall : EvmCall {
         }
 
 
-        val txHash = broadcastTransaction(chainId, credentials, tx, rpcUrls)
-
-
-        return Pair(txHash, localNonce)
+        return if (broadcastTransaction) {
+            Pair(broadcastTransaction(chainId, credentials, tx, rpcUrls), localNonce)
+        } else {
+            Pair(sign(chainId, credentials, tx), localNonce)
+        }
     }
 
     suspend fun getCredentials(walletAddress: String): Credentials {

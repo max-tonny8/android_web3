@@ -15,9 +15,6 @@ data class TokenApproveParam(
     val tokenAmount: BigInteger,
     val tokenAddress: String,
 
-    val to: String,
-    val from: String,
-
     val data: String,
     val value: BigInteger,
 

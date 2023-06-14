@@ -1,13 +1,13 @@
-package com.one.web3.task.transaction.sign
+package com.one.web3.task.transaction.send
 
 import com.one.web3.Param
 import com.one.web3.Web3Task
 import java.math.BigDecimal
 import java.math.BigInteger
 
-interface SignTransactionTask : Web3Task<SignTransactionParam, Pair<String, BigInteger>>
+interface SendTransactionTask : Web3Task<SendTransactionParam, Pair<String, BigInteger>>
 
-open class SignTransactionParam(
+open class SendTransactionParam(
 
     open val to: String,
     open val from: String,
